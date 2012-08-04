@@ -1,0 +1,26 @@
+{
+  "name": "cardcatalog",
+  "description": "",
+  "version": "0.0.1",
+  "private": true,
+  "url": "http://github.com/TxSSC/Card-Catalog",
+  "keywords": [],
+  "dependencies": {
+    "trapperkeeper": "0.0.1"
+  },
+  "devDependencies": {
+    "mocha": "*",
+    "should": "*"
+  },
+  "scripts": {
+    "test": "mocha test/**"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:TxSSC/Card-Catalog.git"
+  },
+  "main": "./lib/index.js",
+  "engines": {
+    "node": ">=0.6.x"
+  }
+}
