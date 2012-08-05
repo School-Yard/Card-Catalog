@@ -17,7 +17,6 @@ describe('Cards', function() {
 
       it('should create a cache object', function() {
         should.exist(cards.cache);
-        should.exist(cards.cache.example);
       });
     });
 
@@ -43,7 +42,9 @@ describe('Cards', function() {
     });
 
     it('should load the cards into a cache', function() {
-      cards.load([plugin]);
+      cards.cards = [plugin];
+      cards.load();
+
       var keys = Object.keys(cards.cache);
       keys.length.should.eql(1);
       keys[0].should.eql('example');
@@ -57,6 +58,7 @@ describe('Cards', function() {
       cards = new Cards({
         cards: [plugin]
       });
+      cards.load();
     });
 
     it('should return a card object', function() {
@@ -74,6 +76,7 @@ describe('Cards', function() {
       cards = new Cards({
         cards: [plugin]
       });
+      cards.load();
     });
 
     describe('valid path', function() {

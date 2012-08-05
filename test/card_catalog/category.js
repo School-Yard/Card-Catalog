@@ -73,16 +73,23 @@ describe('Category', function() {
 
     before(function(done) {
       category.storage.create({name: 'example', slug: 'foobar', plugins: ['example']}, function() {
-        category.load();
-        category.cards = new Cards({
-          cards: [plugin]
+
+        category.on('loaded', function() {
+
+          category.cards = new Cards({
+            cards: [plugin]
+          });
+
+          category.cards.load();
+          done();
         });
-        done();
+
+        category.load();
       });
     });
 
     describe('valid path', function() {
-      var mockReq = { 
+      var mockReq = {
         method: 'GET',
         url: 'http://example.com/foobar/example'
       };
@@ -98,7 +105,7 @@ describe('Category', function() {
     });
 
     describe('invalid path', function() {
-      var mockReq = { 
+      var mockReq = {
         method: 'GET',
         url: 'http://example.com/foobar/example/abc'
       };
