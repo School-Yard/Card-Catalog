@@ -1,12 +1,12 @@
 {
   "name": "cardcatalog",
   "description": "",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "Cody Stoltman <particlebanana@gmail.com>",
   "url": "http://github.com/TxSSC/Card-Catalog",
   "keywords": ["router", "plugins"],
   "dependencies": {
-    "trapperkeeper": "0.0.2"
+    "trapperkeeper": "0.0.1"
   },
   "devDependencies": {
     "mocha": "*",
