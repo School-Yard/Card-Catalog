@@ -6,7 +6,7 @@
   "url": "http://github.com/TxSSC/Card-Catalog",
   "keywords": ["router", "plugins"],
   "dependencies": {
-    "trapperkeeper": "0.0.1"
+    "trapperkeeper": "0.0.2"
   },
   "devDependencies": {
     "mocha": "*",
