@@ -1,6 +1,6 @@
 {
   "name": "cardcatalog",
-  "description": "",
+  "description": "A routing system for node using pluggable apps.",
   "version": "0.0.2",
   "author": "Cody Stoltman <particlebanana@gmail.com>",
   "url": "http://github.com/TxSSC/Card-Catalog",
