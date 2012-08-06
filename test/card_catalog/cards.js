@@ -80,7 +80,7 @@ describe('Cards', function() {
     });
 
     describe('valid path', function() {
-      var mockReq = { 
+      var mockReq = {
         method: 'GET',
         url: 'http://example.com/foobar/example'
       };
@@ -88,17 +88,18 @@ describe('Cards', function() {
       var category = JSON.stringify({name: 'example', slug: 'foobar', plugins: ['example']});
 
       it('should call dispatch method on Cards', function(done) {
-        mockReq.fn = function(site) {
-          JSON.parse(site).slug.should.eql('foobar');
+        mockReq.category = category;
+        mockReq.fn = function(category) {
+          JSON.parse(category).slug.should.eql('foobar');
           done();
         };
 
-        cards.dispatch(mockReq, {}, category, function() {});
+        cards.dispatch(mockReq, {}, function() {});
       });
     });
 
     describe('invalid path', function() {
-      var mockReq = { 
+      var mockReq = {
         method: 'GET',
         url: 'http://example.com/foobar/example/abc'
       };
@@ -106,12 +107,13 @@ describe('Cards', function() {
       var category = {name: 'example', slug: 'foobar', plugins: ['example']};
 
       it('should call dispatch method on Cards', function(done) {
+        mockReq.category = category;
         var err = function(err) {
           err.status.should.eql(404);
           done();
         };
 
-        cards.dispatch(mockReq, function() {}, category, err);
+        cards.dispatch(mockReq, function() {}, err);
       });
     });
   });
