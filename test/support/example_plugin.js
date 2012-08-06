@@ -15,6 +15,6 @@ var Example = module.exports = function Example(options) {
 
 util.inherits(Example, card_catalog.card);
 
-Example.prototype.index = function root(req, res, category) {
-  req.fn(category);
+Example.prototype.index = function root(req, res, callback) {
+  req.fn(req.category);
 };
