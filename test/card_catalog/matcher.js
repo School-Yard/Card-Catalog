@@ -5,52 +5,33 @@ var router = {
   '/:id': function() {}
 };
 
-function matcher(path, callback) {
-  Matcher(path, router, callback);
-}
-
 describe('Match', function(){
   
   describe('valid path', function(){
-    var err_status, route_obj;
+    var matcher = new Matcher('/123', router);
 
-    before(function(done) {
-      var path = '/123';
-      matcher(path, function(err, route) {
-        if(err) err_status = err;
-        if(!err) route_obj = route;
+    it('should emit a matched route', function(done) {
+      matcher.on('matched', function(match) {
+        match.route.should.be.a('function');
+        match.params.id.should.eql('123');
         done();
       });
-    });
 
-    it('should return a route function', function() {
-      should.not.exist(err_status);
-      route_obj.route.should.be.a('function');
+      matcher.match();
     });
-
-    it('should set the id param', function() {
-      route_obj.params.id.should.eql('123');
-    });
-
   });
 
   describe('invalid path', function(){
-    var err_status, route_obj;
+    var matcher = new Matcher('/123/edit', router);
 
-    before(function(done) {
-      var path = '/123/edit';
-      matcher(path, function(err, route) {
-        if(err) err_status = err;
-        route_obj = route;
+    it('should emit a 404 error', function(done) {
+      matcher.on('error', function(err) {
+        err.status.should.eql(404);
         done();
       });
-    });
 
-    it('should return an error status', function() {
-      should.not.exist(route_obj);
-      err_status.status.should.eql(404);
+      matcher.match();
     });
-
   });
 
 });

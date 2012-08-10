@@ -2,6 +2,7 @@ var card_catalog = require('../../lib'),
     util = require('util');
 
 var Example = module.exports = function Example(options) {
+
   this.name = "Example";
   this.slug = "example";
 
@@ -15,6 +16,6 @@ var Example = module.exports = function Example(options) {
 
 util.inherits(Example, card_catalog.card);
 
-Example.prototype.index = function root(req, res, callback) {
-  req.fn(req.category);
+Example.prototype.index = function root(req, res) {
+  this.emit('routed');
 };

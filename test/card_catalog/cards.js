@@ -87,14 +87,12 @@ describe('Cards', function() {
 
       var category = JSON.stringify({name: 'example', slug: 'foobar', plugins: ['example']});
 
-      it('should call dispatch method on Cards', function(done) {
-        mockReq.category = category;
-        mockReq.fn = function(category) {
-          JSON.parse(category).slug.should.eql('foobar');
+      it('should route the req to the card instance', function(done) {
+        cards.cache.example.on('routed', function() {
           done();
-        };
+        });
 
-        cards.dispatch(mockReq, {}, function() {});
+        cards.dispatch(mockReq, {});
       });
     });
 
@@ -106,14 +104,13 @@ describe('Cards', function() {
 
       var category = {name: 'example', slug: 'foobar', plugins: ['example']};
 
-      it('should call dispatch method on Cards', function(done) {
-        mockReq.category = category;
-        var err = function(err) {
+      it('should emit a 404 error', function(done) {
+        cards.cache.example.on('error', function(err) {
           err.status.should.eql(404);
           done();
-        };
+        });
 
-        cards.dispatch(mockReq, function() {}, err);
+        cards.dispatch(mockReq, {});
       });
     });
   });
