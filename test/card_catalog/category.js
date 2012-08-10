@@ -1,7 +1,7 @@
 var should = require('should'),
     trapper_keeper = require('trapperkeeper'),
     Category = require('../../lib/card_catalog/category'),
-    Cards = require('../../lib/card_catalog/cards'),
+    CardCollection = require('../../lib/card_catalog/collection'),
     plugin = require('../support/example_plugin');
 
 var store, category, record;
@@ -40,8 +40,8 @@ describe('Category', function() {
   });
 
   describe('.load()', function() {
-    var record_1 = {name: 'foo', slug: 'foo', plugins: ['example']},
-        record_2 = {name: 'bar', slug: 'bar', plugins: ['example']};
+    var record_1 = {name: 'foo', slug: 'foo', plugins: ['Example']},
+        record_2 = {name: 'bar', slug: 'bar', plugins: ['Example']};
 
     before(function(done) {
       category.storage.create(record_1, function() {
@@ -59,8 +59,8 @@ describe('Category', function() {
   });
 
   describe('.match()', function() {
-    var record_1 = {name: 'foo', slug: 'foo', plugins: ['example']},
-        record_2 = {name: 'bar', slug: 'bar', plugins: ['example']};
+    var record_1 = {name: 'foo', slug: 'foo', plugins: ['Example']},
+        record_2 = {name: 'bar', slug: 'bar', plugins: ['Example']};
 
     before(function(done) {
       category.storage.create(record_1, function() {
@@ -72,16 +72,16 @@ describe('Category', function() {
 
     it('should return a category object', function() {
       var slug = 'foo',
-          record = {name: 'foo', slug: 'foo', plugins: ['example'], id: '1'},
+          record = {name: 'foo', slug: 'foo', plugins: ['Example'], id: '1'},
           key = category.match(slug);
 
-      JSON.parse(key).should.eql(record);
+      key.should.eql(record);
     });
   });
 
   describe('.dispatch()', function() {
 
-    var test_category = {name: 'example', slug: 'foobar', plugins: ['example']};
+    var test_category = {name: 'example', slug: 'foobar', plugins: ['Example']};
 
     // Create the test category to dispatch to
     function createCategory(callback) {
@@ -92,7 +92,7 @@ describe('Category', function() {
     }
 
     function loadCards() {
-      category.cards = new Cards({
+      category.cards = new CardCollection({
         cards: [plugin]
       });
 
@@ -126,7 +126,8 @@ describe('Category', function() {
     describe('invalid path', function() {
       var mockReq = {
         method: 'GET',
-        url: 'http://example.com/foobar/example/abc'
+        url: 'http://example.com/foobar/example/abc',
+        category: category
       };
 
       it('should emit a 404 error', function(done) {

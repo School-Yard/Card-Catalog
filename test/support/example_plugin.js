@@ -14,7 +14,7 @@ var Example = module.exports = function Example(options) {
   };
 };
 
-util.inherits(Example, card_catalog.card);
+util.inherits(Example, card_catalog.Card);
 
 Example.prototype.index = function root(req, res) {
   this.emit('routed');
