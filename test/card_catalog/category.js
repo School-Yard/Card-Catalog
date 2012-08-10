@@ -4,24 +4,30 @@ var should = require('should'),
     Cards = require('../../lib/card_catalog/cards'),
     plugin = require('../support/example_plugin');
 
-var store = trapper_keeper.connect('memory'),
-    category,
-    record;
+var store, category, record;
 
-describe('Category', function() {
+// Generic Setup Tasks
+function setup(callback) {
 
-  before(function(done) {
-    store.connection.on('ready', function() {
-      category = new Category({
-        connection: store,
-        namespace: 'test'
-      });
+  store = trapper_keeper.connect('memory');
+  store.connection.on('ready', function() {
 
-      done();
+    category = new Category({
+      connection: store,
+      namespace: 'test'
     });
 
-    store.connection.ready();
+    callback();
   });
+}
+
+// Setup Category instance
+before(function(done) {
+  setup(done);
+});
+
+
+describe('Category', function() {
 
   describe('Constructor', function() {
     it('should instatiate a storage property', function() {
@@ -33,11 +39,13 @@ describe('Category', function() {
     });
   });
 
-  describe('load()', function() {
+  describe('.load()', function() {
+    var record_1 = {name: 'foo', slug: 'foo', plugins: ['example']},
+        record_2 = {name: 'bar', slug: 'bar', plugins: ['example']};
 
     before(function(done) {
-      category.storage.create({name: 'foo', slug: 'foo', plugins: ['example']}, function() {
-        category.storage.create({name: 'bar', slug: 'bar', plugins: ['example']}, function() {
+      category.storage.create(record_1, function() {
+        category.storage.create(record_2, function() {
           done();
         });
       });
@@ -50,11 +58,13 @@ describe('Category', function() {
     });
   });
 
-  describe('match()', function() {
+  describe('.match()', function() {
+    var record_1 = {name: 'foo', slug: 'foo', plugins: ['example']},
+        record_2 = {name: 'bar', slug: 'bar', plugins: ['example']};
 
     before(function(done) {
-      category.storage.create({name: 'foo', slug: 'foo', plugins: ['example']}, function() {
-        category.storage.create({name: 'bar', slug: 'bar', plugins: ['example']}, function() {
+      category.storage.create(record_1, function() {
+        category.storage.create(record_2, function() {
           done();
         });
       });
@@ -69,23 +79,33 @@ describe('Category', function() {
     });
   });
 
-  describe('dispatch()', function() {
+  describe('.dispatch()', function() {
+
+    var test_category = {name: 'example', slug: 'foobar', plugins: ['example']};
+
+    // Create the test category to dispatch to
+    function createCategory(callback) {
+      category.storage.create(test_category, function() {
+        category.load();
+        callback();
+      });
+    }
+
+    function loadCards() {
+      category.cards = new Cards({
+        cards: [plugin]
+      });
+
+      category.cards.load();
+    }
 
     before(function(done) {
-      category.storage.create({name: 'example', slug: 'foobar', plugins: ['example']}, function() {
-
-        category.on('loaded', function() {
-
-          category.cards = new Cards({
-            cards: [plugin]
-          });
-
-          category.cards.load();
-          done();
-        });
-
-        category.load();
+      // set an event listener
+      category.on('loaded', function() {
+        done();
       });
+
+      createCategory(loadCards);
     });
 
     describe('valid path', function() {
@@ -94,13 +114,12 @@ describe('Category', function() {
         url: 'http://example.com/foobar/example'
       };
 
-      it('should call dispatch method on Cards', function(done) {
-        mockReq.fn = function(site) {
-          JSON.parse(site).slug.should.eql('foobar');
+      it('should route the req to the card instance', function(done) {
+        category.cards.cache.example.on('routed', function() {
           done();
-        };
+        });
 
-        category.dispatch(mockReq, {}, function() {});
+        category.dispatch(mockReq, {});
       });
     });
 
@@ -110,16 +129,15 @@ describe('Category', function() {
         url: 'http://example.com/foobar/example/abc'
       };
 
-      it('should call dispatch method on Cards', function(done) {
-        var err = function(err) {
+      it('should emit a 404 error', function(done) {
+        category.cards.cache.example.on('error', function(err) {
           err.status.should.eql(404);
           done();
-        };
+        });
 
-        category.dispatch(mockReq, function() {}, err);
+        category.dispatch(mockReq, {});
       });
     });
 
   });
-
 });
