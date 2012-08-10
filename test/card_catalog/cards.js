@@ -1,8 +1,8 @@
 var should = require('should'),
-    Cards = require('../../lib/card_catalog/cards'),
+    CardCollection = require('../../lib/card_catalog/collection'),
     plugin = require('../support/example_plugin');
 
-describe('Cards', function() {
+describe('CardCollection', function() {
 
   describe('Constructor', function() {
 
@@ -10,7 +10,7 @@ describe('Cards', function() {
       var cards;
 
       before(function() {
-        cards = new Cards({
+        cards = new CardCollection({
           cards: [plugin]
         });
       });
@@ -24,7 +24,7 @@ describe('Cards', function() {
 
       it('should throw an error with no cards object', function() {
         (function() {
-          new Cards({});
+          new CardCollection({});
         }).should.throw('Must pass in a cards object to the parameters');
       });
     });
@@ -34,7 +34,7 @@ describe('Cards', function() {
     var cards;
 
     before(function() {
-      cards = new Cards({
+      cards = new CardCollection({
         cards: []
       });
       // clear cache to ensure load is working
@@ -55,7 +55,7 @@ describe('Cards', function() {
     var cards;
 
     before(function() {
-      cards = new Cards({
+      cards = new CardCollection({
         cards: [plugin]
       });
       cards.load();
@@ -73,7 +73,7 @@ describe('Cards', function() {
     var cards;
 
     before(function() {
-      cards = new Cards({
+      cards = new CardCollection({
         cards: [plugin]
       });
       cards.load();
@@ -82,10 +82,13 @@ describe('Cards', function() {
     describe('valid path', function() {
       var mockReq = {
         method: 'GET',
-        url: 'http://example.com/foobar/example'
+        url: 'http://example.com/foobar/example',
+        category: {
+          name: 'example',
+          slug: 'foobar',
+          plugins: ['Example']
+        }
       };
-
-      var category = JSON.stringify({name: 'example', slug: 'foobar', plugins: ['example']});
 
       it('should route the req to the card instance', function(done) {
         cards.cache.example.on('routed', function() {
@@ -99,10 +102,13 @@ describe('Cards', function() {
     describe('invalid path', function() {
       var mockReq = {
         method: 'GET',
-        url: 'http://example.com/foobar/example/abc'
+        url: 'http://example.com/foobar/example/abc',
+        category: {
+          name: 'example',
+          slug: 'foobar',
+          plugins: ['Example']
+        }
       };
-
-      var category = {name: 'example', slug: 'foobar', plugins: ['example']};
 
       it('should emit a 404 error', function(done) {
         cards.cache.example.on('error', function(err) {

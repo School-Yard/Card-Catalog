@@ -6,7 +6,7 @@ var router = {
 };
 
 describe('Match', function(){
-  
+
   describe('valid path', function(){
     var matcher = new Matcher('/123', router);
 
