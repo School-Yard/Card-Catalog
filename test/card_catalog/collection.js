@@ -1,6 +1,7 @@
 var should = require('should'),
     CardCollection = require('../../lib/card_catalog/collection'),
-    plugin = require('../support/example_plugin');
+    plugin = require('../support/example_plugin'),
+    utils = require('../support/utils');
 
 describe('CardCollection', function() {
 
@@ -83,14 +84,15 @@ describe('CardCollection', function() {
     });
 
     describe('valid path', function() {
-      var mockReq = {
-        method: 'GET',
-        url: 'http://example.com/foobar/example',
-        category: {
-          name: 'example',
-          slug: 'foobar',
-          plugins: ['Example']
-        }
+      var req = utils.mock_stream(),
+          res = utils.mock_stream();
+
+      req.method = 'GET';
+      req.url = 'http://example.com/foobar/example';
+      req.category = {
+        name: 'example',
+        slug: 'foobar',
+        plugins: ['Example']
       };
 
       it('should route the req to the card instance', function(done) {
@@ -98,19 +100,20 @@ describe('CardCollection', function() {
           done();
         });
 
-        cards.dispatch(mockReq, {});
+        cards.dispatch(req, res);
       });
     });
 
     describe('invalid path', function() {
-      var mockReq = {
-        method: 'GET',
-        url: 'http://example.com/foobar/example/abc',
-        category: {
-          name: 'example',
-          slug: 'foobar',
-          plugins: ['Example']
-        }
+      var req = utils.mock_stream(),
+          res = utils.mock_stream();
+
+      req.method = 'GET';
+      req.url = 'http://example.com/foobar/example/abc';
+      req.category = {
+        name: 'example',
+        slug: 'foobar',
+        plugins: ['Example']
       };
 
       it('should emit a 404 error', function(done) {
@@ -119,7 +122,7 @@ describe('CardCollection', function() {
           done();
         });
 
-        cards.dispatch(mockReq, {});
+        cards.dispatch(req, res);
       });
     });
   });
