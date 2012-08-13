@@ -1,10 +1,16 @@
 var should = require('should'),
     Card = require('../../lib').Card;
-    helpers = require('../support/helpers');
+    helpers = require('../support/helpers'),
+    object_plugin = require('../support/object_plugin'),
+    function_plugin = require('../support/function_plugin');
 
 var card = new Card();
 
 describe('Card', function() {
+  before(function() {
+    function_card = new function_plugin();
+    object_card = new Card(object_plugin);
+  });
 
   describe('filter()', function() {
     var req = helpers.mock_stream(),
@@ -29,6 +35,33 @@ describe('Card', function() {
         events.should.eql(2);
         done();
       });
+    });
+  });
+
+  describe('object plugin should be equal to the functional plugin and', function() {
+    it('name should be equal', function() {
+      function_card.name.should.equal(object_card.name);
+    });
+
+    it('slug should be equal', function() {
+      function_card.slug.should.equal(object_card.slug);
+    });
+
+    it('routes should be equal', function() {
+      //Validate that the route object is the same
+      Object.keys(function_card.router).forEach(function(method) {
+        object_card.router.should.have.property(method);
+
+        Object.keys(function_card.router[method]).forEach(function(route) {
+          object_card.router[method].should.have.property(route);
+        });
+      });
+    });
+  });
+
+  describe('event listeners', function() {
+    it('should bind properly', function() {
+      object_card.listeners('error').should.not.be.empty;
     });
   });
 
