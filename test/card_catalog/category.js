@@ -1,38 +1,21 @@
 var should = require('should'),
-    trapper_keeper = require('trapperkeeper'),
-    Category = require('../../lib/card_catalog/category'),
-    CardCollection = require('../../lib/card_catalog/collection'),
-    plugin = require('../support/example_plugin');
+    utils = require('../support/utils');
 
-var store, category, record;
-
-// Generic Setup Tasks
-function setup(callback) {
-
-  store = trapper_keeper.connect('memory');
-  store.connection.on('ready', function() {
-
-    category = new Category({
-      connection: store,
-      namespace: 'test',
-      error_handler: function(res, err) {
-        return true;
-      }
-    });
-
-    callback();
-  });
-}
+var category;
 
 // Setup Category instance
 before(function(done) {
-  setup(done);
+  utils.setup_catalog(function(catalog) {
+    category = catalog;
+    done();
+  });
 });
 
 
 describe('Category', function() {
 
   describe('Constructor', function() {
+
     it('should instatiate a storage property', function() {
       should.exist(category.storage);
     });
@@ -40,6 +23,7 @@ describe('Category', function() {
     it('should set a namespace', function() {
       category.namespace.should.eql('test');
     });
+
   });
 
   describe('.load()', function() {
@@ -82,67 +66,71 @@ describe('Category', function() {
     });
   });
 
-  describe('.dispatch()', function() {
+  describe('filter()', function() {
+    var req = utils.mock_stream(),
+        res = utils.mock_stream();
 
-    var test_category = {name: 'example', slug: 'foobar', plugins: ['Example']};
-
-    // Create the test category to dispatch to
-    function createCategory(callback) {
-      category.storage.create(test_category, function() {
-        category.load();
-        callback();
-      });
-    }
-
-    function loadCards() {
-      category.cards = new CardCollection({
-        cards: [plugin],
-        error_handler: function(res, err) {
-          return true;
+    before(function() {
+      category.before = [
+        function(req, res) {
+          res.emit('next');
+        },
+        function(req, res, next) {
+          next();
         }
-      });
+      ];
+    });
 
-      category.cards.load();
-    }
+    it('should call each function in before array', function(done) {
+      var events = 0;
+      res.on('next', function() { events++; });
 
-    before(function(done) {
-      // set an event listener
-      category.on('loaded', function() {
+      category.filter(req, res, function() {
+        events.should.eql(2);
         done();
       });
+    });
+  });
 
-      createCategory(loadCards);
+  describe('.dispatch()', function() {
+
+    before(function(done) {
+      utils.create_catalog_object(category, function() {
+        utils.load_cards(category);
+        done();
+      });
     });
 
     describe('valid path', function() {
-      var mockReq = {
-        method: 'GET',
-        url: 'http://example.com/foobar/example'
-      };
+      var req = utils.mock_stream(),
+          res = utils.mock_stream();
+
+      req.url = 'http://example.com/foobar/example';
+      req.method = 'GET';
 
       it('should route the req to the card instance', function(done) {
         category.cards.cache.example.on('routed', function() {
           done();
         });
 
-        category.dispatch(mockReq, {});
+        category.dispatch(req, res);
       });
     });
 
     describe('invalid path', function() {
-      var mockReq = {
-        method: 'GET',
-        url: 'http://example.com/foobar/example/abc',
-        category: category
-      };
+      var req = utils.mock_stream(),
+          res = utils.mock_stream();
 
-      it('should emit a 404 error', function(done) {
+      req.url = 'http://example.com/foobar/example/abc';
+      req.method = 'GET';
+
+      it('should return a 404 error', function(done) {
         category.cards.cache.example.on('error', function(err) {
           err.message.status.should.eql(404);
           done();
         });
 
-        category.dispatch(mockReq, {});
+        category.dispatch(req, res);
       });
     });
 
