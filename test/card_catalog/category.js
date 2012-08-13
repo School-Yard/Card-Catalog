@@ -14,7 +14,10 @@ function setup(callback) {
 
     category = new Category({
       connection: store,
-      namespace: 'test'
+      namespace: 'test',
+      error_handler: function(res, err) {
+        return true;
+      }
     });
 
     callback();
@@ -93,7 +96,10 @@ describe('Category', function() {
 
     function loadCards() {
       category.cards = new CardCollection({
-        cards: [plugin]
+        cards: [plugin],
+        error_handler: function(res, err) {
+          return true;
+        }
       });
 
       category.cards.load();
@@ -132,7 +138,7 @@ describe('Category', function() {
 
       it('should emit a 404 error', function(done) {
         category.cards.cache.example.on('error', function(err) {
-          err.status.should.eql(404);
+          err.message.status.should.eql(404);
           done();
         });
 
