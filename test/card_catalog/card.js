@@ -67,4 +67,22 @@ describe('Card', function() {
     });
   });
 
+  describe('storage connection', function() {
+    var storage, card;
+
+    before(function() {
+      storage = {};
+      card = new Card({ storage: storage });
+    });
+
+    it('should use storage connection from options', function() {
+      card.storage.should.equal(storage);
+    });
+
+    it('should be null if not passed in options', function() {
+      var card = new Card();
+      should.not.exist(card.storage);
+    });
+  });
+
 });
