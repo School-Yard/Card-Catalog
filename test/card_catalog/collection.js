@@ -1,7 +1,7 @@
 var should = require('should'),
     CardCollection = require('../../lib/card_catalog/collection'),
     plugin = require('../support/example_plugin'),
-    utils = require('../support/utils');
+    helpers = require('../support/helpers');
 
 describe('CardCollection', function() {
 
@@ -84,8 +84,8 @@ describe('CardCollection', function() {
     });
 
     describe('valid path', function() {
-      var req = utils.mock_stream(),
-          res = utils.mock_stream();
+      var req = helpers.mock_stream(),
+          res = helpers.mock_stream();
 
       req.method = 'GET';
       req.url = 'http://example.com/foobar/example';
@@ -105,8 +105,8 @@ describe('CardCollection', function() {
     });
 
     describe('invalid path', function() {
-      var req = utils.mock_stream(),
-          res = utils.mock_stream();
+      var req = helpers.mock_stream(),
+          res = helpers.mock_stream();
 
       req.method = 'GET';
       req.url = 'http://example.com/foobar/example/abc';

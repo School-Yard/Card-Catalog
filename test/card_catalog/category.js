@@ -1,11 +1,11 @@
 var should = require('should'),
-    utils = require('../support/utils');
+    helpers = require('../support/helpers');
 
 var category;
 
 // Setup Category instance
 before(function(done) {
-  utils.setup_catalog(function(catalog) {
+  helpers.setup_catalog(function(catalog) {
     category = catalog;
     done();
   });
@@ -67,8 +67,8 @@ describe('Category', function() {
   });
 
   describe('filter()', function() {
-    var req = utils.mock_stream(),
-        res = utils.mock_stream();
+    var req = helpers.mock_stream(),
+        res = helpers.mock_stream();
 
     before(function() {
       category.before = [
@@ -95,15 +95,15 @@ describe('Category', function() {
   describe('.dispatch()', function() {
 
     before(function(done) {
-      utils.create_catalog_object(category, function() {
-        utils.load_cards(category);
+      helpers.create_catalog_object(category, function() {
+        helpers.load_cards(category);
         done();
       });
     });
 
     describe('valid path', function() {
-      var req = utils.mock_stream(),
-          res = utils.mock_stream();
+      var req = helpers.mock_stream(),
+          res = helpers.mock_stream();
 
       req.url = 'http://example.com/foobar/example';
       req.method = 'GET';
@@ -118,8 +118,8 @@ describe('Category', function() {
     });
 
     describe('invalid path', function() {
-      var req = utils.mock_stream(),
-          res = utils.mock_stream();
+      var req = helpers.mock_stream(),
+          res = helpers.mock_stream();
 
       req.url = 'http://example.com/foobar/example/abc';
       req.method = 'GET';

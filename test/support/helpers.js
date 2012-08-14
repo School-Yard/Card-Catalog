@@ -1,20 +1,21 @@
 var trapper_keeper = require('trapperkeeper'),
-    card_catalog = require('../../lib'),
+    Category = require('../../lib/card_catalog/category'),
+    Collection = require('../../lib/card_catalog/collection'),
     card = require('./example_plugin');
     events = require('events');
 
-var utils = module.exports;
+var helpers = module.exports;
 
 /**
  * Setup a generic catalog using the memory
  * adapter and generic error_handler.
  */
-utils.setup_catalog = function(callback) {
+helpers.setup_catalog = function(callback) {
   var store = trapper_keeper.connect('memory');
 
   store.connection.on('ready', function() {
 
-    var category = new card_catalog.Category({
+    var category = new Category({
       connection: store,
       namespace: 'test',
       error_handler: function(res, err) {
@@ -29,14 +30,14 @@ utils.setup_catalog = function(callback) {
 /**
  * Create a mock stream object
  */
-utils.mock_stream = function() {
+helpers.mock_stream = function() {
   return new events.EventEmitter();
 };
 
 /**
  * Create/Save a test category object
  */
-utils.create_catalog_object = function(catalog, callback) {
+helpers.create_catalog_object = function(catalog, callback) {
   var test_category = {name: 'example', slug: 'foobar', plugins: ['Example']};
   
   catalog.on('loaded', function() {
@@ -51,9 +52,9 @@ utils.create_catalog_object = function(catalog, callback) {
 /**
  *
  */
-utils.load_cards = function(catalog) {
+helpers.load_cards = function(catalog) {
   
-  catalog.cards = new card_catalog.CardCollection({
+  catalog.cards = new Collection({
     cards: [card],
     error_handler: function(res, err) {
       return true;
