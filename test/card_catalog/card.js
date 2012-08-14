@@ -72,20 +72,20 @@ describe('Card', function() {
   });
 
   describe('storage connection', function() {
-    var storage, card;
+    var connection, card;
 
     before(function() {
-      storage = {};
-      card = new Card({ storage: storage });
+      connection = {};
+      card = new Card({ connection: connection });
     });
 
     it('should use storage connection from options', function() {
-      card.storage.should.equal(storage);
+      card.connection.should.equal(connection);
     });
 
     it('should be null if not passed in options', function() {
       var card = new Card();
-      should.not.exist(card.storage);
+      should.not.exist(card.connection);
     });
   });
 
