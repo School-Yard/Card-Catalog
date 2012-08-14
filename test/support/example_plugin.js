@@ -7,6 +7,9 @@ var Example = module.exports = function Example(options) {
   this.name = "Example";
   this.slug = "example";
 
+  // Set a static directory
+  this.set_static(__dirname + '/public');
+
   // Create the Example routing table
   this.router = {
     'get': {
