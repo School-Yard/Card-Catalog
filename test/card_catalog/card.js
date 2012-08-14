@@ -49,6 +49,10 @@ describe('Card', function() {
       function_card.slug.should.equal(object_card.slug);
     });
 
+    it('static root directory should be equal', function() {
+      function_card._static.root.should.equal(object_card._static.root);
+    });
+
     it('routes should be equal', function() {
       //Validate that the route object is the same
       Object.keys(function_card.router).forEach(function(method) {
