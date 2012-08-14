@@ -1,35 +1,21 @@
 var should = require('should'),
-    trapper_keeper = require('trapperkeeper'),
-    Category = require('../../lib/card_catalog/category'),
-    CardCollection = require('../../lib/card_catalog/collection'),
-    plugin = require('../support/example_plugin');
+    helpers = require('../support/helpers');
 
-var store, category, record;
-
-// Generic Setup Tasks
-function setup(callback) {
-
-  store = trapper_keeper.connect('memory');
-  store.connection.on('ready', function() {
-
-    category = new Category({
-      connection: store,
-      namespace: 'test'
-    });
-
-    callback();
-  });
-}
+var category;
 
 // Setup Category instance
 before(function(done) {
-  setup(done);
+  helpers.setup_catalog(function(catalog) {
+    category = catalog;
+    done();
+  });
 });
 
 
 describe('Category', function() {
 
   describe('Constructor', function() {
+
     it('should instatiate a storage property', function() {
       should.exist(category.storage);
     });
@@ -37,6 +23,7 @@ describe('Category', function() {
     it('should set a namespace', function() {
       category.namespace.should.eql('test');
     });
+
   });
 
   describe('.load()', function() {
@@ -79,64 +66,71 @@ describe('Category', function() {
     });
   });
 
-  describe('.dispatch()', function() {
+  describe('filter()', function() {
+    var req = helpers.mock_stream(),
+        res = helpers.mock_stream();
 
-    var test_category = {name: 'example', slug: 'foobar', plugins: ['Example']};
+    before(function() {
+      category.before = [
+        function(req, res) {
+          res.emit('next');
+        },
+        function(req, res, next) {
+          next();
+        }
+      ];
+    });
 
-    // Create the test category to dispatch to
-    function createCategory(callback) {
-      category.storage.create(test_category, function() {
-        category.load();
-        callback();
-      });
-    }
+    it('should call each function in before array', function(done) {
+      var events = 0;
+      res.on('next', function() { events++; });
 
-    function loadCards() {
-      category.cards = new CardCollection({
-        cards: [plugin]
-      });
-
-      category.cards.load();
-    }
-
-    before(function(done) {
-      // set an event listener
-      category.on('loaded', function() {
+      category.filter(req, res, function() {
+        events.should.eql(2);
         done();
       });
+    });
+  });
 
-      createCategory(loadCards);
+  describe('.dispatch()', function() {
+
+    before(function(done) {
+      helpers.create_catalog_object(category, function() {
+        helpers.load_cards(category);
+        done();
+      });
     });
 
     describe('valid path', function() {
-      var mockReq = {
-        method: 'GET',
-        url: 'http://example.com/foobar/example'
-      };
+      var req = helpers.mock_stream(),
+          res = helpers.mock_stream();
+
+      req.url = 'http://example.com/foobar/example';
+      req.method = 'GET';
 
       it('should route the req to the card instance', function(done) {
         category.cards.cache.example.on('routed', function() {
           done();
         });
 
-        category.dispatch(mockReq, {});
+        category.dispatch(req, res);
       });
     });
 
     describe('invalid path', function() {
-      var mockReq = {
-        method: 'GET',
-        url: 'http://example.com/foobar/example/abc',
-        category: category
-      };
+      var req = helpers.mock_stream(),
+          res = helpers.mock_stream();
 
-      it('should emit a 404 error', function(done) {
+      req.url = 'http://example.com/foobar/example/abc';
+      req.method = 'GET';
+
+      it('should return a 404 error', function(done) {
         category.cards.cache.example.on('error', function(err) {
-          err.status.should.eql(404);
+          err.message.status.should.eql(404);
           done();
         });
 
-        category.dispatch(mockReq, {});
+        category.dispatch(req, res);
       });
     });
 

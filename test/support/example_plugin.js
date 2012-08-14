@@ -2,6 +2,7 @@ var card_catalog = require('../../lib'),
     util = require('util');
 
 var Example = module.exports = function Example(options) {
+  card_catalog.Card.call(this, options);
 
   this.name = "Example";
   this.slug = "example";

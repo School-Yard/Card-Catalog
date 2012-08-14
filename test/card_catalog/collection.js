@@ -1,6 +1,7 @@
 var should = require('should'),
     CardCollection = require('../../lib/card_catalog/collection'),
-    plugin = require('../support/example_plugin');
+    plugin = require('../support/example_plugin'),
+    helpers = require('../support/helpers');
 
 describe('CardCollection', function() {
 
@@ -74,20 +75,24 @@ describe('CardCollection', function() {
 
     before(function() {
       cards = new CardCollection({
-        cards: [plugin]
+        cards: [plugin],
+        error_handler: function(res, err) {
+          return true;
+        }
       });
       cards.load();
     });
 
     describe('valid path', function() {
-      var mockReq = {
-        method: 'GET',
-        url: 'http://example.com/foobar/example',
-        category: {
-          name: 'example',
-          slug: 'foobar',
-          plugins: ['Example']
-        }
+      var req = helpers.mock_stream(),
+          res = helpers.mock_stream();
+
+      req.method = 'GET';
+      req.url = 'http://example.com/foobar/example';
+      req.category = {
+        name: 'example',
+        slug: 'foobar',
+        plugins: ['Example']
       };
 
       it('should route the req to the card instance', function(done) {
@@ -95,28 +100,29 @@ describe('CardCollection', function() {
           done();
         });
 
-        cards.dispatch(mockReq, {});
+        cards.dispatch(req, res);
       });
     });
 
     describe('invalid path', function() {
-      var mockReq = {
-        method: 'GET',
-        url: 'http://example.com/foobar/example/abc',
-        category: {
-          name: 'example',
-          slug: 'foobar',
-          plugins: ['Example']
-        }
+      var req = helpers.mock_stream(),
+          res = helpers.mock_stream();
+
+      req.method = 'GET';
+      req.url = 'http://example.com/foobar/example/abc';
+      req.category = {
+        name: 'example',
+        slug: 'foobar',
+        plugins: ['Example']
       };
 
       it('should emit a 404 error', function(done) {
         cards.cache.example.on('error', function(err) {
-          err.status.should.eql(404);
+          err.message.status.should.eql(404);
           done();
         });
 
-        cards.dispatch(mockReq, {});
+        cards.dispatch(req, res);
       });
     });
   });
