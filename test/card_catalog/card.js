@@ -53,6 +53,10 @@ describe('Card', function() {
       function_card._static.root.should.equal(object_card._static.root);
     });
 
+    it('should run an objects init function', function() {
+      object_card.initialized.should.equal(true);
+    });
+
     it('routes should be equal', function() {
       //Validate that the route object is the same
       Object.keys(function_card.router).forEach(function(method) {
