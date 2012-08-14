@@ -7,6 +7,8 @@ var should = require('should'),
 var card = new Card();
 
 describe('Card', function() {
+  var function_card, object_card;
+
   before(function() {
     function_card = new function_plugin();
     object_card = new Card(object_plugin);
