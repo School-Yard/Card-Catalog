@@ -2,6 +2,10 @@ module.exports = {
   'name': 'Example',
   'slug': 'example',
 
+  'init': function() {
+    this.initialized = true;
+  },
+
   'router': {
     'get': {
       '/': 'index',

@@ -53,6 +53,10 @@ describe('Card', function() {
       function_card._static.root.should.equal(object_card._static.root);
     });
 
+    it('should run an objects init function', function() {
+      object_card.initialized.should.equal(true);
+    });
+
     it('routes should be equal', function() {
       //Validate that the route object is the same
       Object.keys(function_card.router).forEach(function(method) {
@@ -72,20 +76,20 @@ describe('Card', function() {
   });
 
   describe('storage connection', function() {
-    var storage, card;
+    var connection, card;
 
     before(function() {
-      storage = {};
-      card = new Card({ storage: storage });
+      connection = {};
+      card = new Card({ connection: connection });
     });
 
     it('should use storage connection from options', function() {
-      card.storage.should.equal(storage);
+      card.connection.should.equal(connection);
     });
 
     it('should be null if not passed in options', function() {
       var card = new Card();
-      should.not.exist(card.storage);
+      should.not.exist(card.connection);
     });
   });
 
