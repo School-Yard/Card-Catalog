@@ -2,7 +2,7 @@ var should = require('should'),
     Card = require('../../lib').Card;
     helpers = require('../support/helpers'),
     object_plugin = require('../support/object_plugin'),
-    function_plugin = require('../support/function_plugin');
+    function_plugin = require('../support/example_plugin');
 
 var card = new Card();
 
