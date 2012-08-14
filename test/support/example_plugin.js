@@ -10,13 +10,16 @@ var Example = module.exports = function Example(options) {
   // Create the Example routing table
   this.router = {
     'get': {
-      '/': this.index
+      '/': this.index,
+      '/route': this.testRoute
     }
   };
 };
 
 util.inherits(Example, card_catalog.Card);
 
-Example.prototype.index = function root(req, res) {
+Example.prototype.index = function (req, res) {
   this.emit('routed');
 };
+
+Example.prototype.testRoute = function(req, res) {};
