@@ -27,13 +27,16 @@ describe('Category', function() {
   });
 
   describe('.load()', function() {
-    var record_1 = {name: 'foo', slug: 'foo', plugins: ['Example']},
-        record_2 = {name: 'bar', slug: 'bar', plugins: ['Example']};
+    var record_1 = {name: 'foo', slug: 'foo', published: true, plugins: ['Example']},
+        record_2 = {name: 'bar', slug: 'bar', published: true, plugins: ['Example']},
+        record_3 = {name: 'foobar', slug: 'foobar', published: false, plugins: []};
 
     before(function(done) {
       category.storage.create(record_1, function() {
         category.storage.create(record_2, function() {
-          done();
+          category.storage.create(record_3, function() {
+            done();
+          });
         });
       });
     });
@@ -41,17 +44,28 @@ describe('Category', function() {
     it('should load the categories into a cache', function() {
       category.load();
       var keys = Object.keys(category.cache);
+      keys.length.should.not.eql(0);
+    });
+
+    it('should not load unpublished categories', function() {
+      var keys = Object.keys(category.cache);
+      keys[0].should.eql('foo');
+      keys[1].should.eql('bar');
       keys.length.should.eql(2);
     });
   });
 
   describe('.match()', function() {
-    var record_1 = {name: 'foo', slug: 'foo', plugins: ['Example']},
-        record_2 = {name: 'bar', slug: 'bar', plugins: ['Example']};
+    var record_1 = {name: 'foo', slug: 'foo', published: true, plugins: ['Example']},
+        record_2 = {name: 'bar', slug: 'bar', published: true, plugins: ['Example']};
 
     before(function(done) {
+      category.cache = {};
+      category.connection.store = {};
+
       category.storage.create(record_1, function() {
         category.storage.create(record_2, function() {
+          category.load();
           done();
         });
       });
@@ -59,7 +73,7 @@ describe('Category', function() {
 
     it('should return a category object', function() {
       var slug = 'foo',
-          record = {name: 'foo', slug: 'foo', plugins: ['Example'], id: '1'},
+          record = {name: 'foo', slug: 'foo', published: true, plugins: ['Example'], id: category.cache.foo.id},
           key = category.match(slug);
 
       key.should.eql(record);

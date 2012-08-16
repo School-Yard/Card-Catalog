@@ -13,7 +13,7 @@ var helpers = module.exports;
 helpers.setup_catalog = function(callback) {
   var store = trapper_keeper.connect('memory');
 
-  store.connection.on('ready', function() {
+  store.on('ready', function() {
 
     var category = new Category({
       connection: store,
@@ -38,8 +38,11 @@ helpers.mock_stream = function() {
  * Create/Save a test category object
  */
 helpers.create_catalog_object = function(catalog, callback) {
-  var test_category = {name: 'example', slug: 'foobar', plugins: ['Example']};
+  var test_category = {name: 'example', slug: 'foobar', published: true, plugins: ['Example']};
   
+  catalog.cache = {};
+  catalog.connection.store = {};
+
   catalog.on('loaded', function() {
     callback();
   });
