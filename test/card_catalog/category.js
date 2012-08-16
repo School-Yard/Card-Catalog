@@ -55,6 +55,43 @@ describe('Category', function() {
     });
   });
 
+  describe('.attach()', function() {
+    var record = {name: 'append', slug: 'append', published: true, plugins: ['Example']};
+
+    it('should attach a category to the cache', function() {
+      category.cache = {};
+      category.attach(record);
+      should.exist(category.cache['append']);
+    });
+
+    it('should not attach an unpublished category', function() {
+      category.cache = {};
+      record.published = false;
+      category.attach(record);
+      should.not.exist(category.cache['append']);
+    });
+
+  });
+
+  describe('.detach()', function() {
+    var record = {name: 'append', slug: 'append', published: true, plugins: ['Example']};
+
+    before(function() {
+      category.attach(record);
+    });
+
+    it('should detach a category from the cache when an object', function() {
+      category.detach(record);
+      should.not.exist(category.cache['append']);
+    });
+
+    it('should detach a category from the cache when a string', function() {
+      category.detach('append');
+      should.not.exist(category.cache['append']);
+    });
+
+  });
+
   describe('.match()', function() {
     var record_1 = {name: 'foo', slug: 'foo', published: true, plugins: ['Example']},
         record_2 = {name: 'bar', slug: 'bar', published: true, plugins: ['Example']};
