@@ -13,7 +13,7 @@ var helpers = module.exports;
 helpers.setup_catalog = function(callback) {
   var store = trapper_keeper.connect('memory');
 
-  store.connection.on('ready', function() {
+  store.on('ready', function() {
 
     var category = new Category({
       connection: store,

@@ -76,15 +76,15 @@ describe('Card', function() {
   });
 
   describe('storage connection', function() {
-    var connection, card;
+    var adapters, card;
 
     before(function() {
-      connection = {};
-      card = new Card({ connection: connection });
+      adapters = {};
+      card = new Card({ adapters: adapters });
     });
 
-    it('should use storage connection from options', function() {
-      card.connection.should.equal(connection);
+    it('should expose adapters from options', function() {
+      card.adapters.should.equal(adapters);
     });
 
     it('should be null if not passed in options', function() {
