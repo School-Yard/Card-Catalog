@@ -118,7 +118,7 @@ describe('CardCollection', function() {
 
       it('should emit a 404 error', function(done) {
         cards.cache.example.on('error', function(err) {
-          err.message.status.should.eql(404);
+          err.status.should.eql(404);
           done();
         });
 
