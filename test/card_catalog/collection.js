@@ -40,15 +40,19 @@ describe('CardCollection', function() {
       });
       // clear cache to ensure load is working
       cards.cache = {};
+
+      cards.cards = [plugin];
+      cards.load();
     });
 
     it('should load the cards into a cache', function() {
-      cards.cards = [plugin];
-      cards.load();
-
       var keys = Object.keys(cards.cache);
       keys.length.should.eql(1);
       keys[0].should.eql('example');
+    });
+
+    it('should create a circular reference on each card', function() {
+      cards.cache.example.collection.should.eql(cards.cache);
     });
   });
 
