@@ -11,7 +11,8 @@
   },
   "devDependencies": {
     "mocha": "*",
-    "should": "*"
+    "should": "*",
+    "clone": "0.1.x"
   },
   "scripts": {
     "test": "mocha test/**"
