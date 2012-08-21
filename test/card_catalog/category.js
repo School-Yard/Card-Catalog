@@ -1,5 +1,6 @@
 var should = require('should'),
-    helpers = require('../support/helpers');
+    helpers = require('../support/helpers'),
+    clone = require('clone');
 
 var category;
 
@@ -108,12 +109,25 @@ describe('Category', function() {
       });
     });
 
-    it('should return a category object', function() {
-      var slug = 'foo',
-          record = {name: 'foo', slug: 'foo', published: true, plugins: ['Example'], id: category.cache.foo.id},
-          key = category.match(slug);
+    describe('a published category', function() {
+      it('should return a category object', function() {
+        var slug = 'foo',
+            record = {name: 'foo', slug: 'foo', published: true, plugins: ['Example'], id: category.cache.foo.id},
+            key = category.match(slug);
 
-      key.should.eql(record);
+        key.should.eql(record);
+      });
+    });
+
+    describe('an un-published category', function() {
+      before(function() {
+        category.cache.foo.published = false;
+      });
+
+      it('should return false', function() {
+        var slug = 'foo';
+        category.match(slug).should.eql(false);
+      });
     });
   });
 
@@ -145,45 +159,84 @@ describe('Category', function() {
 
   describe('.dispatch()', function() {
 
-    before(function(done) {
-      helpers.create_catalog_object(category, function() {
-        helpers.load_cards(category);
-        done();
-      });
-    });
+    describe('to published route with a', function() {
+      var obj;
 
-    describe('valid path', function() {
-      var req = helpers.mock_stream(),
-          res = helpers.mock_stream();
+      before(function(done) {
+        obj = clone(category);
 
-      req.url = 'http://example.com/foobar/example';
-      req.method = 'GET';
-
-      it('should route the req to the card instance', function(done) {
-        category.cards.cache.example.on('routed', function() {
+        helpers.create_catalog_object(obj, function() {
+          helpers.load_cards(obj);
           done();
         });
+      });
 
-        category.dispatch(req, res);
+      describe('valid path', function() {
+        var req = helpers.mock_stream(),
+            res = helpers.mock_stream();
+
+        req.url = 'http://example.com/foobar/example';
+        req.method = 'GET';
+
+        it('should route the req to the card instance', function(done) {
+          obj.cards.cache.example.on('routed', function() {
+            done();
+          });
+
+          obj.dispatch(req, res);
+        });
+      });
+
+      describe('invalid path', function() {
+        var req = helpers.mock_stream(),
+            res = helpers.mock_stream();
+
+        req.url = 'http://example.com/foo/bar';
+        req.method = 'GET';
+
+        it('should return a 404 error', function(done) {
+          obj.on('error', function(err) {
+            err.status.should.eql(404);
+            done();
+          });
+
+          obj.dispatch(req, res);
+        });
       });
     });
 
-    describe('invalid path', function() {
-      var req = helpers.mock_stream(),
-          res = helpers.mock_stream();
+    describe('to an unpublished route', function() {
+      var obj;
 
-      req.url = 'http://example.com/foobar/example/abc';
-      req.method = 'GET';
+      before(function(done) {
+        obj = clone(category);
 
-      it('should return a 404 error', function(done) {
-        category.cards.cache.example.on('error', function(err) {
-          err.status.should.eql(404);
+        helpers.create_catalog_object(obj, function() {
+          helpers.load_cards(obj);
+
+          // Set published = false
+          obj.cache.foobar.published = false;
+
           done();
         });
+      });
 
-        category.dispatch(req, res);
+      describe('with a valid path', function() {
+        var req = helpers.mock_stream(),
+            res = helpers.mock_stream();
+
+        req.url = 'http://example.com/foobar/example';
+        req.method = 'GET';
+
+        it('should return a 404 error', function(done) {
+          obj.on('error', function(err) {
+            err.status.should.eql(404);
+            done();
+          });
+
+          obj.dispatch(req, res);
+        });
       });
     });
-
   });
 });
