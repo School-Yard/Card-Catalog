@@ -1,7 +1,7 @@
 {
   "name": "cardcatalog",
   "description": "A routing system for node using pluggable apps.",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "author": "Cody Stoltman <particlebanana@gmail.com>",
   "maintainers" : [
     "particlebanana <particlebanana@gmail.com>",
