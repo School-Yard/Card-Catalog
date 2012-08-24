@@ -75,58 +75,97 @@ describe('CardCollection', function() {
   });
 
   describe('dispatch()', function() {
-    var cards;
 
-    before(function() {
-      cards = new CardCollection({
-        cards: [plugin],
-        error_handler: function(res, err) {
-          return true;
-        }
+    describe('to published route with a', function() {
+      var cards;
+
+      before(function() {
+        cards = new CardCollection({
+          cards: [plugin],
+          error_handler: function(res, err) {
+            return true;
+          }
+        });
+        cards.load();
       });
-      cards.load();
+
+      describe('valid path', function() {
+        var req = helpers.mock_stream(),
+            res = helpers.mock_stream();
+
+        req.method = 'GET';
+        req.url = 'http://example.com/foobar/example';
+        req.category = {
+          name: 'example',
+          slug: 'foobar',
+          plugins: [{ 'Example': { published: true }}]
+        };
+
+        it('should route the req to the card instance', function(done) {
+          cards.cache.example.on('routed', function() {
+            done();
+          });
+
+          cards.dispatch(req, res);
+        });
+      });
+
+      describe('invalid path', function() {
+        var req = helpers.mock_stream(),
+            res = helpers.mock_stream();
+
+        req.method = 'GET';
+        req.url = 'http://example.com/foobar/example/abc';
+        req.category = {
+          name: 'example',
+          slug: 'foobar',
+          plugins: [{ 'Example': { published: true }}]
+        };
+
+        it('should emit a 404 error', function(done) {
+          cards.cache.example.on('error', function(err) {
+            err.status.should.eql(404);
+            done();
+          });
+
+          cards.dispatch(req, res);
+        });
+      });
     });
 
-    describe('valid path', function() {
-      var req = helpers.mock_stream(),
-          res = helpers.mock_stream();
+    describe('to an unpublished route with a', function() {
+      var cards;
 
-      req.method = 'GET';
-      req.url = 'http://example.com/foobar/example';
-      req.category = {
-        name: 'example',
-        slug: 'foobar',
-        plugins: ['Example']
-      };
-
-      it('should route the req to the card instance', function(done) {
-        cards.cache.example.on('routed', function() {
-          done();
+      before(function() {
+        cards = new CardCollection({
+          cards: [plugin],
+          error_handler: function(res, err) {
+            return true;
+          }
         });
-
-        cards.dispatch(req, res);
+        cards.load();
       });
-    });
 
-    describe('invalid path', function() {
-      var req = helpers.mock_stream(),
-          res = helpers.mock_stream();
+      describe('valid path', function() {
+        var req = helpers.mock_stream(),
+            res = helpers.mock_stream();
 
-      req.method = 'GET';
-      req.url = 'http://example.com/foobar/example/abc';
-      req.category = {
-        name: 'example',
-        slug: 'foobar',
-        plugins: ['Example']
-      };
+        req.method = 'GET';
+        req.url = 'http://example.com/foobar/example';
+        req.category = {
+          name: 'example',
+          slug: 'foobar',
+          plugins: [{ 'Example': { published: false }}]
+        };
 
-      it('should emit a 404 error', function(done) {
-        cards.cache.example.on('error', function(err) {
-          err.status.should.eql(404);
-          done();
+        it('should emit error on collection object', function(done) {
+          cards.on('error', function(err) {
+            err.status.should.eql(404);
+            done();
+          });
+
+          cards.dispatch(req, res);
         });
-
-        cards.dispatch(req, res);
       });
     });
   });
