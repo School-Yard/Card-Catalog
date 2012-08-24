@@ -3,7 +3,7 @@ Card Catalog
 
 A dynamic and RESTful routing system for Node JS that allows you to attach and detach routes on the fly. It was designed to be used in a CMS-like environment where sites are built upon dynamic routers.
 
-[![Build Status](https://secure.travis-ci.org/TxSSC/Card-Catalog.png?branch=master)](http://travis-ci.org/TxSSC/Card-Catalog)
+[![Build Status](https://secure.travis-ci.org/School-Yard/Card-Catalog.png?branch=master)](http://travis-ci.org/School-Yard/Card-Catalog)
 
 **Status**: Experimental
 
@@ -17,7 +17,7 @@ It can be represented using a simple RESTful example:
 
 `http://example.com/[Category]/[Card]/[Controller]/[Model]/[Action]`
 
-A Category will be made up of various plugin-style classes which we call Cards. Each Card will inherit from a base Card Catalog - [Card](https://github.com/TxSSC/Card-Catalog/blob/master/lib/card_catalog/card.js).
+A Category will be made up of various plugin-style classes which we call Cards. Each Card will inherit from a base Card Catalog - [Card](https://github.com/School-Yard/Card-Catalog/blob/master/lib/card_catalog/card.js).
 
 A request will flow through the catalog by first attempting to match a category slug to the request URI path. If matched it will dispatch the request to a collection of cards where it will attempt to match the rest of the URI path to a card slug. Finally, if both matches are found it will call the `route` method on the Card class.
 
@@ -35,7 +35,7 @@ $ npm install cardcatalog
 
 ## Usage
 
-Card-Catalog requires at least one data connection to lookup stored category definitions when the server is started. It currently only has support for [TrapperKeeper](https://github.com/TxSSC/TrapperKeeper) but it should be trivial to change this.
+Card-Catalog requires at least one data connection to lookup stored category definitions when the server is started. It currently only has support for [TrapperKeeper](https://github.com/School-Yard/TrapperKeeper) but it should be trivial to change this.
 
 Card-Catalog allows for the use of Connect style middleware with a `(req, res, next)` style signature or an evented middleware like that in use on Flatiron where a `next` event is triggered on the `res` object.
 
@@ -186,9 +186,9 @@ catalog.addCards({
 
 ## Cards
 
-A card is simply a function that inherits from the [Card](https://github.com/TxSSC/Card-Catalog/blob/master/lib/card_catalog/card.js) class. It should contain the logic for handling all child routes.
+A card is simply a function that inherits from the [Card](https://github.com/School-Yard/Card-Catalog/blob/master/lib/card_catalog/card.js) class. It should contain the logic for handling all child routes.
 
-It can be created using a function that inherits from the [Card Class](https://github.com/TxSSC/Card-Catalog/blob/master/lib/card_catalog/card.js) using `util.inherits` or as an Object. Examples of both are shown below.
+It can be created using a function that inherits from the [Card Class](https://github.com/School-Yard/Card-Catalog/blob/master/lib/card_catalog/card.js) using `util.inherits` or as an Object. Examples of both are shown below.
 
 #### Required Options
 
