@@ -3,8 +3,13 @@
   "description": "A routing system for node using pluggable apps.",
   "version": "0.0.2",
   "author": "Cody Stoltman <particlebanana@gmail.com>",
+  "maintainers" : [
+    "particlebanana <particlebanana@gmail.com>",
+    "vanetix <matmcfarland@gmail.com>"
+  ],
   "url": "http://github.com/TxSSC/Card-Catalog",
   "keywords": ["router", "plugins"],
+  "license" : "MIT",
   "dependencies": {
     "trapperkeeper": "0.0.x",
     "node-static": "0.6.x"
