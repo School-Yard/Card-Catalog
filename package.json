@@ -7,7 +7,7 @@
     "particlebanana <particlebanana@gmail.com>",
     "vanetix <matmcfarland@gmail.com>"
   ],
-  "url": "http://github.com/TxSSC/Card-Catalog",
+  "url": "http://github.com/School-Yard/Card-Catalog",
   "keywords": ["router", "plugins"],
   "license" : "MIT",
   "dependencies": {
@@ -24,7 +24,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:TxSSC/Card-Catalog.git"
+    "url": "git@github.com:School-Yard/Card-Catalog.git"
   },
   "main": "./lib/index.js",
   "engines": {
