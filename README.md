@@ -130,6 +130,7 @@ var category = {
   name : "Foo",    // required, Unique key value
   slug : "foo",    // required, URL encoded permalink
   plugins : [ ],   // default to empty
+  index : '', // category index route, if not set only full routes will be routed
   published : true // required, True or False
 };
 ```
