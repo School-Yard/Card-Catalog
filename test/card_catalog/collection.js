@@ -102,7 +102,7 @@ describe('CardCollection', function() {
         };
 
         it('should route the req to the card instance', function(done) {
-          cards.cache.example.on('routed', function() {
+          cards.cache.example.once('routed', function() {
             done();
           });
 
@@ -123,8 +123,30 @@ describe('CardCollection', function() {
         };
 
         it('should emit a 404 error', function(done) {
-          cards.cache.example.on('error', function(err) {
+          cards.cache.example.once('error', function(err) {
             err.status.should.eql(404);
+            done();
+          });
+
+          cards.dispatch(req, res);
+        });
+      });
+
+      describe('empty path but with index route', function() {
+        var req = helpers.mock_stream(),
+            res = helpers.mock_stream();
+
+        req.method = 'GET';
+        req.url = 'http://example.com/foobar/',
+        req.category = {
+          name: 'example',
+          slug: 'foobar',
+          index: 'example',
+          plugins: [{ 'Example': { published: true }}]
+        };
+
+        it('should route to example', function(done) {
+          cards.cache.example.on('routed', function() {
             done();
           });
 
@@ -159,7 +181,30 @@ describe('CardCollection', function() {
         };
 
         it('should emit error on collection object', function(done) {
-          cards.on('error', function(err) {
+          cards.once('error', function(err) {
+            err.status.should.eql(404);
+            done();
+          });
+
+          cards.dispatch(req, res);
+        });
+      });
+
+      describe('index route', function() {
+        var req = helpers.mock_stream(),
+            res = helpers.mock_stream();
+
+        req.method = 'GET';
+        req.url = 'http://example.com/foobar/example';
+        req.category = {
+          name: 'example',
+          slug: 'foobar',
+          index: 'example',
+          plugins: [{ 'Example': { published: false }}]
+        };
+
+        it('should emit error on collection object', function(done) {
+          cards.once('error', function(err) {
             err.status.should.eql(404);
             done();
           });

@@ -38,8 +38,20 @@ helpers.mock_stream = function() {
  * Create/Save a test category object
  */
 helpers.create_catalog_object = function(catalog, callback) {
-  var test_category = {name: 'example', slug: 'foobar', published: true, plugins: [{ 'Example' : { published: true }} ]};
-  
+  var test_category = {
+    name: 'example',
+    slug: 'foobar',
+    published: true,
+    index: 'example',
+    plugins: [
+      {
+        'Example' : {
+          published: true
+        }
+      }
+    ]
+  };
+
   catalog.cache = {};
   catalog.connection.store = {};
 
@@ -56,7 +68,7 @@ helpers.create_catalog_object = function(catalog, callback) {
  *
  */
 helpers.load_cards = function(catalog) {
-  
+
   catalog.cards = new Collection({
     cards: [card],
     error_handler: function(res, err) {
